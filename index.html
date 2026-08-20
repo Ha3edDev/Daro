@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>دستیار سلامت روزانه</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f2e28;
+    --paper: #f2f7f4;
+    --paper-2: #e7f0ea;
+    --card: #ffffff;
+    --accent: #0f5d4e;
+    --accent-deep: #0a3f35;
+    --accent-soft: #d8ece3;
+    --lav: #6b6fd6;
+    --lav-soft: #e7e7fb;
+    --amber: #d98c33;
+    --amber-soft: #fbecd6;
+    --rose: #c2555a;
+    --rose-soft: #f8e2e2;
+    --muted: #6e8079;
+    --line: #e1ebe5;
+    --shadow: 0 4px 18px rgba(15,61,50,0.08);
+    --bg-glow-1: #e4f2ea;
+    --bg-glow-2: #eef0fb;
+  }
+
+  /* ---- Themes ---- */
+  body[data-theme="teal"] {
+    --ink: #0f2e28; --paper: #f2f7f4; --paper-2: #e7f0ea; --card: #ffffff;
+    --accent: #0f5d4e; --accent-deep: #0a3f35; --accent-soft: #d8ece3;
+    --muted: #6e8079; --line: #e1ebe5;
+    --bg-glow-1: #e4f2ea; --bg-glow-2: #eef0fb;
+  }
+  body[data-theme="lavender"] {
+    --ink: #2a2650; --paper: #f5f4fc; --paper-2: #ecebf9; --card: #ffffff;
+    --accent: #5a52c7; --accent-deep: #37317e; --accent-soft: #e4e2f9;
+    --muted: #726ea3; --line: #e5e2f6;
+    --bg-glow-1: #ece9fb; --bg-glow-2: #f7ecf2;
+  }
+  body[data-theme="clay"] {
+    --ink: #3a2318; --paper: #fbf4ec; --paper-2: #f5e7d8; --card: #ffffff;
+    --accent: #b56336; --accent-deep: #7c4223; --accent-soft: #f2ddc7;
+    --muted: #8a705f; --line: #efe0cf;
+    --bg-glow-1: #f7e9d8; --bg-glow-2: #fbeee9;
+  }
+  body[data-theme="dark"] {
+    --ink: #e8f2ee; --paper: #101715; --paper-2: #172420; --card: #16211e;
+    --accent: #4fd8ae; --accent-deep: #8ff0d2; --accent-soft: #1f3a32;
+    --muted: #7fa79a; --line: #24332e;
+    --bg-glow-1: #12241d; --bg-glow-2: #17181f;
+    --shadow: 0 4px 18px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: 'Vazirmatn', sans-serif;
+    background:
+      radial-gradient(1200px 600px at 100% -10%, var(--bg-glow-1) 0%, transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, var(--bg-glow-2) 0%, transparent 55%),
+      var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    padding-bottom: 220px;
+    transition: background 0.3s, color 0.3s;
+  }
+  .mono { font-family: 'Space Mono', monospace; }
+
+  /* Header */
+  header {
+    padding: 22px 18px 14px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .eyebrow {
+    font-size: 0.72em;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display:inline-block; }
+  h1 {
+    font-size: 1.5em;
+    font-weight: 800;
+    margin: 4px 0 2px;
+    color: var(--accent-deep);
+  }
+  .date-line { color: var(--muted); font-size: 0.88em; }
+
+  .sync-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 0.72em;
+    color: var(--muted);
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    white-space: nowrap;
+    margin-top: 4px;
+    cursor: default;
+  }
+  .sync-pill .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #9aa8a3; flex-shrink:0; }
+  .sync-pill.ok .sync-dot { background: var(--accent); }
+  .sync-pill.err { color: var(--rose); border-color: var(--rose-soft); cursor: pointer; }
+  .sync-pill.err .sync-dot { background: var(--rose); }
+  .sync-pill.saving .sync-dot { background: var(--amber); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* Ring */
+  .ring-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--card);
+    border-radius: 20px;
+    padding: 16px 18px;
+    margin: 4px 18px 0;
+    box-shadow: var(--shadow);
+  }
+  .ring { position: relative; width: 74px; height: 74px; flex-shrink: 0; }
+  .ring svg { transform: rotate(-90deg); width: 74px; height: 74px; }
+  .ring circle { fill: none; stroke-width: 8; }
+  .ring .bg { stroke: var(--paper-2); }
+  .ring .fg { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 0.4s ease; }
+  .ring-label {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.95em; color: var(--accent-deep);
+  }
+  .ring-text { flex: 1; }
+  .ring-text .title { font-weight: 700; font-size: 0.98em; color: var(--accent-deep); margin-bottom: 2px; }
+  .ring-text .sub { font-size: 0.82em; color: var(--muted); }
+
+  /* Sections */
+  main { padding: 0 18px; margin-bottom: 40px; }
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(4px);} to { opacity:1; transform: translateY(0);} }
+
+  .section-title {
+    font-weight: 700;
+    color: var(--accent-deep);
+    margin: 22px 2px 10px;
+    font-size: 1.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title .badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62em;
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+
+  .med-card {
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 10px;
+    overflow: hidden;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .med-card.checked { border-color: var(--accent-soft); }
+  .med-row { display: flex; align-items: center; gap: 12px; padding: 13px 14px; }
+  .chk-btn {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 2px solid var(--accent-soft);
+    background: var(--paper);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9em; color: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .chk-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .med-info { flex: 1; min-width: 0; }
+  .med-name { font-weight: 700; font-size: 0.98em; color: var(--ink); }
+  .med-card.checked .med-name { color: var(--muted); text-decoration: line-through; }
+  .med-note { font-size: 0.78em; color: var(--muted); margin-top: 1px; }
+  .info-btn {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: none; background: var(--paper-2); color: var(--accent-deep);
+    font-size: 0.85em; font-weight: 800; cursor: pointer; flex-shrink: 0;
+  }
+
+  button.reset-btn {
+    display: block; width: 100%; margin: 20px 0 6px;
+    padding: 13px; border-radius: 14px;
+    background: var(--card); border: 1.5px solid var(--rose);
+    color: var(--rose); font-family: inherit; font-size: 0.9em; font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* Med info accordion */
+  .info-card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); margin-bottom: 10px; overflow: hidden; }
+  .info-head { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .info-head .tag { font-family: 'Space Mono', monospace; font-size: 0.62em; padding: 2px 8px; border-radius: 20px; font-weight: 700; margin-inline-start: 8px; }
+  .tag.abx { background: var(--rose-soft); color: var(--rose); }
+  .tag.acid { background: var(--lav-soft); color: var(--lav); }
+  .tag.symp { background: var(--amber-soft); color: #8a5b1a; }
+  .tag.dia { background: var(--accent-soft); color: var(--accent-deep); }
+  .info-title { font-weight: 700; font-size: 0.95em; display:flex; align-items:center; }
+  .info-arrow { color: var(--muted); transition: transform 0.2s; font-size: 0.8em; }
+  .info-card.open .info-arrow { transform: rotate(180deg); }
+  .info-body { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; padding: 0 16px; }
+  .info-card.open .info-body { max-height: 300px; padding: 0 16px 16px; }
+  .info-body p { margin: 0 0 8px; font-size: 0.85em; line-height: 1.9; color: var(--ink); opacity: 0.85; }
+  .info-body .when { font-size: 0.8em; color: var(--accent-deep); font-weight: 700; opacity: 1; }
+
+  /* Log tools */
+  .tool-card { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); padding: 16px; margin-bottom: 14px; }
+  .tool-title { font-weight: 700; color: var(--accent-deep); margin-bottom: 10px; font-size: 0.98em; }
+  .form-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .form-row input, .form-row select {
+    flex: 1; font-family: inherit; border: 1.5px solid var(--line); border-radius: 10px;
+    padding: 10px; font-size: 0.9em; background: var(--paper); color: var(--ink);
+  }
+  .add-btn {
+    width: 100%; padding: 11px; background: var(--accent); color: #fff; border: none;
+    border-radius: 10px; font-family: inherit; font-weight: 700; font-size: 0.9em; cursor: pointer; margin-top: 2px;
+  }
+  .log-list { margin-top: 12px; }
+  .log-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 2px; border-bottom: 1px solid var(--line); font-size: 0.86em; }
+  .log-item:last-child { border-bottom: none; }
+  .log-val { font-weight: 700; color: var(--accent-deep); }
+  .log-time { color: var(--muted); font-family: 'Space Mono', monospace; font-size: 0.85em; }
+  .log-del { background:none; border:none; color: var(--rose); font-size: 1.1em; cursor:pointer; padding:2px 6px; }
+
+  /* Water tracker */
+  .water-wrap { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .water-cups { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cup { width: 34px; height: 34px; border-radius: 9px; background: var(--paper-2); border: 1.5px solid var(--line); cursor: pointer; font-size: 1em; display: flex; align-items: center; justify-content: center; }
+  .cup.filled { background: var(--lav-soft); border-color: var(--lav); }
+  .water-count { font-weight: 800; color: var(--accent-deep); font-size: 1.3em; }
+
+  /* Settings / theme picker */
+  .theme-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 6px; }
+  .theme-opt {
+    border-radius: 14px; padding: 10px 6px; text-align: center; cursor: pointer;
+    border: 2px solid var(--line); background: var(--paper); transition: border-color 0.2s;
+  }
+  .theme-opt.active { border-color: var(--accent); }
+  .theme-swatch { width: 100%; height: 34px; border-radius: 8px; margin-bottom: 6px; }
+  .theme-opt span { font-size: 0.72em; font-weight: 600; color: var(--ink); }
+  .swatch-teal { background: linear-gradient(135deg, #0f5d4e, #d8ece3); }
+  .swatch-lavender { background: linear-gradient(135deg, #5a52c7, #e4e2f9); }
+  .swatch-clay { background: linear-gradient(135deg, #b56336, #f2ddc7); }
+  .swatch-dark { background: linear-gradient(135deg, #101715, #4fd8ae); }
+
+  /* Bottom nav */
+  nav.bottom {
+    position: fixed; bottom: 14px; inset-inline: 14px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    display: flex;
+    padding: 6px;
+    gap: 4px;
+    box-shadow: 0 8px 24px rgba(15,61,50,0.14);
+    z-index: 10;
+  }
+  nav.bottom button {
+    flex: 1; background: none; border: none; font-family: inherit;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 8px 1px; color: var(--muted); font-size: 0.6em; font-weight: 600;
+    cursor: pointer; border-radius: 16px; transition: all 0.2s;
+  }
+  nav.bottom button .ic { font-size: 1.2em; }
+  nav.bottom button.active { color: var(--accent-deep); background: var(--accent-soft); transform: translateY(-2px); }
+
+  .status-toast {
+    position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%);
+    background: var(--accent-deep); color: #fff; font-size: 0.8em;
+    padding: 8px 16px; border-radius: 30px; opacity: 0; pointer-events: none;
+    transition: opacity 0.25s; z-index: 20;
+  }
+  .status-toast.show { opacity: 1; }
+  .status-toast.err { background: var(--rose); }
+
+  ::-webkit-scrollbar { display: none; }
+
+  /* Calendar */
+  .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-nav button { background: var(--card); border: 1px solid var(--line); color: var(--accent-deep); width: 34px; height: 34px; border-radius: 10px; font-size: 1em; cursor: pointer; box-shadow: var(--shadow); }
+  .cal-nav .cal-title { font-weight: 700; color: var(--accent-deep); font-size: 1em; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: var(--card); border-radius: 16px; box-shadow: var(--shadow); padding: 14px; margin-bottom: 14px; }
+  .cal-dow { text-align: center; font-size: 0.7em; color: var(--muted); font-weight: 700; padding-bottom: 4px; }
+  .cal-cell { position: relative; aspect-ratio: 1; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; font-weight: 600; cursor: pointer; background: var(--paper); color: var(--ink); border: 1.5px solid transparent; }
+  .cal-cell.empty { visibility: hidden; cursor: default; }
+  .cal-cell.today { border-color: var(--accent); }
+  .cal-cell.selected { border-color: var(--accent-deep); box-shadow: 0 0 0 2px var(--accent-soft) inset; }
+  .cal-cell .dot-row { position: absolute; bottom: 4px; display: flex; gap: 2px; }
+  .cal-cell .dot-row span { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+  .cal-cell.level-none { background: var(--paper); }
+  .cal-cell.level-some { background: var(--amber-soft); }
+  .cal-cell.level-most { background: var(--accent-soft); }
+  .cal-cell.level-full { background: var(--accent); color: #fff; }
+  .cal-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.72em; color: var(--muted); margin: -4px 2px 16px; }
+  .cal-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .cal-detail { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); padding: 16px; }
+  .cal-detail .cd-title { font-weight: 700; color: var(--accent-deep); margin-bottom: 10px; font-size: 0.98em; }
+  .cal-detail .cd-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 0.85em; }
+  .cal-detail .cd-row:last-child { border-bottom: none; }
+  .cal-detail .cd-empty { color: var(--muted); font-size: 0.85em; text-align: center; padding: 10px 0; }
+</style>
+</head>
+<body data-theme="teal">
+
+<header>
+  <div>
+    <div class="eyebrow"><span class="dot"></span>دستیار سلامت</div>
+    <h1>امروزت رو دنبال کن</h1>
+    <div class="date-line" id="dateLine"></div>
+  </div>
+  <div class="sync-pill" id="syncPill"><span class="sync-dot"></span><span id="syncText">در حال بارگذاری</span></div>
+</header>
+
+<div class="ring-wrap">
+  <div class="ring">
+    <svg viewBox="0 0 74 74">
+      <circle class="bg" cx="37" cy="37" r="30"></circle>
+      <circle class="fg" id="ringFg" cx="37" cy="37" r="30" stroke-dasharray="188.5" stroke-dashoffset="188.5"></circle>
+    </svg>
+    <div class="ring-label" id="ringLabel">۰٪</div>
+  </div>
+  <div class="ring-text">
+    <div class="title" id="ringTitle">هنوز دارویی نخوردی</div>
+    <div class="sub" id="ringSub">۹ داروی امروز رو تیک بزن</div>
+  </div>
+</div>
+
+<main>
+
+  <div class="panel active" id="panel-today">
+    <div class="section-title">🌅 صبح، ناشتا</div>
+    <div id="list-morning"></div>
+
+    <div class="section-title">⏱️ هر ۸ ساعت</div>
+    <div id="list-every8h"></div>
+
+    <div class="section-title">🍽️ قبل از ناهار</div>
+    <div id="list-beforeLunch"></div>
+
+    <div class="section-title">🍛 بعد از ناهار</div>
+    <div id="list-afterLunch"></div>
+
+    <div class="section-title">🍽️ قبل از شام</div>
+    <div id="list-beforeDinner"></div>
+
+    <div class="section-title">🍲 بعد از شام</div>
+    <div id="list-afterDinner"></div>
+
+    <button class="reset-btn" id="resetBtn">پاک کردن تیک‌های امروز</button>
+  </div>
+
+  <div class="panel" id="panel-info">
+    <div class="section-title">درباره هر دارو <span class="badge">۹ مورد</span></div>
+    <div id="info-list"></div>
+  </div>
+
+  <div class="panel" id="panel-log">
+    <div class="section-title">🩸 قند خون</div>
+    <div class="tool-card">
+      <div class="tool-title">ثبت اندازه‌گیری جدید</div>
+      <div class="form-row">
+        <input type="number" id="sugarInput" placeholder="عدد قند خون (mg/dL)" inputmode="numeric">
+        <select id="sugarWhen">
+          <option value="ناشتا">ناشتا</option>
+          <option value="قبل غذا">قبل غذا</option>
+          <option value="بعد غذا">بعد غذا</option>
+          <option value="قبل خواب">قبل خواب</option>
+        </select>
+      </div>
+      <button class="add-btn" id="addSugar">ثبت</button>
+      <div class="log-list" id="sugarList"></div>
+    </div>
+
+    <div class="section-title">🌀 درد و علائم معده</div>
+    <div class="tool-card">
+      <div class="tool-title">ثبت علامت جدید</div>
+      <div class="form-row">
+        <select id="sympType">
+          <option value="درد خفیف">درد خفیف</option>
+          <option value="درد متوسط">درد متوسط</option>
+          <option value="سوزش سردل">سوزش سردل</option>
+          <option value="نفخ">نفخ</option>
+          <option value="تهوع">تهوع</option>
+          <option value="بهتر شدم">بهتر شدم</option>
+        </select>
+      </div>
+      <button class="add-btn" id="addSymp">ثبت</button>
+      <div class="log-list" id="sympList"></div>
+    </div>
+
+    <div class="section-title">💧 آب امروز</div>
+    <div class="tool-card">
+      <div class="water-wrap">
+        <div class="water-count"><span id="waterCount">۰</span> لیوان</div>
+        <div class="water-cups" id="waterCups"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-calendar">
+    <div class="section-title">📅 تقویم پیگیری</div>
+    <div class="cal-nav">
+      <button id="calPrev">›</button>
+      <div class="cal-title" id="calTitle"></div>
+      <button id="calNext">‹</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-legend">
+      <span><span class="legend-dot" style="background:var(--paper);border:1px solid var(--line)"></span>استفاده نشده</span>
+      <span><span class="legend-dot" style="background:var(--amber-soft)"></span>کمی دارو خورده شده</span>
+      <span><span class="legend-dot" style="background:var(--accent-soft)"></span>بیشتر داروها خورده شده</span>
+      <span><span class="legend-dot" style="background:var(--accent)"></span>همه داروها کامل</span>
+    </div>
+    <div class="cal-detail" id="calDetail">
+      <div class="cd-title" id="cdTitle">یه روز رو از تقویم انتخاب کن</div>
+      <div class="cd-empty">جزئیات همون روز اینجا نشون داده می‌شه</div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-settings">
+    <div class="section-title">🎨 انتخاب تم</div>
+    <div class="tool-card">
+      <div class="theme-grid" id="themeGrid">
+        <div class="theme-opt" data-theme="teal"><div class="theme-swatch swatch-teal"></div><span>سبز آرام</span></div>
+        <div class="theme-opt" data-theme="lavender"><div class="theme-swatch swatch-lavender"></div><span>بنفش ملایم</span></div>
+        <div class="theme-opt" data-theme="clay"><div class="theme-swatch swatch-clay"></div><span>گلی گرم</span></div>
+        <div class="theme-opt" data-theme="dark"><div class="theme-swatch swatch-dark"></div><span>تیره</span></div>
+      </div>
+    </div>
+    <div class="section-title">ℹ️ وضعیت ذخیره‌سازی</div>
+    <div class="tool-card">
+      <p style="font-size:0.85em; color:var(--muted); line-height:1.9; margin:0 0 10px">
+        اطلاعات این برنامه (تیک داروها، قند خون، علائم، آب) روی همین مرورگ
